@@ -1,0 +1,116 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-event-table
+      author: janos
+      changes:
+        - createTable:
+            tableName: events
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_events
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: VARCHAR(150)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: description
+                  type: VARCHAR(2000)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: organizer_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: venue_name
+                  type: VARCHAR(200)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: address
+                  type: VARCHAR(300)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: starts_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: ends_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: ticket_sales_start
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: ticket_sales_end
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: capacity
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: image_url
+                  type: VARCHAR(255)
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            tableName: events
+            indexName: idx_events_organizer_id
+            columns:
+              - column:
+                  name: organizer_id
+
+        - createIndex:
+            tableName: events
+            indexName: idx_events_status_starts_at
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: starts_at

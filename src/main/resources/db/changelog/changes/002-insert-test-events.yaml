@@ -1,0 +1,110 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-insert-test-events
+      author: janos
+      context: dev,test
+      changes:
+        - insert:
+            tableName: events
+            columns:
+              - column: { name: id, value: "10000000-0000-0000-0000-000000000001" }
+              - column: { name: name, value: "Budapest Java Meetup" }
+              - column: { name: description, value: "Közösségi találkozó Java- és Spring-fejlesztők számára." }
+              - column: { name: organizer_id, value: "20000000-0000-0000-0000-000000000001" }
+              - column: { name: venue_name, value: "Bálna Budapest" }
+              - column: { name: address, value: "1093 Budapest, Fővám tér 11-12." }
+              - column: { name: starts_at, valueComputed: "TIMESTAMPTZ '2026-10-15T18:00:00+02:00'" }
+              - column: { name: ends_at, valueComputed: "TIMESTAMPTZ '2026-10-15T21:00:00+02:00'" }
+              - column: { name: ticket_sales_start, valueComputed: "TIMESTAMPTZ '2026-09-10T09:00:00+02:00'" }
+              - column: { name: ticket_sales_end, valueComputed: "TIMESTAMPTZ '2026-10-15T17:00:00+02:00'" }
+              - column: { name: capacity, valueNumeric: 250 }
+              - column: { name: status, value: "PUBLISHED" }
+              - column: { name: image_url, value: "https://example.com/images/java-meetup.jpg" }
+              - column: { name: created_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:00:00+02:00'" }
+              - column: { name: updated_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:00:00+02:00'" }
+              - column: { name: version, valueNumeric: 0 }
+
+        - insert:
+            tableName: events
+            columns:
+              - column: { name: id, value: "10000000-0000-0000-0000-000000000002" }
+              - column: { name: name, value: "Őszi Jazz Est" }
+              - column: { name: description, value: "Élő jazzkoncert hazai előadókkal." }
+              - column: { name: organizer_id, value: "20000000-0000-0000-0000-000000000002" }
+              - column: { name: venue_name, value: "Budapest Music Center" }
+              - column: { name: address, value: "1093 Budapest, Mátyás utca 8." }
+              - column: { name: starts_at, valueComputed: "TIMESTAMPTZ '2026-11-07T19:30:00+01:00'" }
+              - column: { name: ends_at, valueComputed: "TIMESTAMPTZ '2026-11-07T22:30:00+01:00'" }
+              - column: { name: ticket_sales_start, valueComputed: "TIMESTAMPTZ '2026-09-15T10:00:00+02:00'" }
+              - column: { name: ticket_sales_end, valueComputed: "TIMESTAMPTZ '2026-11-07T18:30:00+01:00'" }
+              - column: { name: capacity, valueNumeric: 350 }
+              - column: { name: status, value: "PUBLISHED" }
+              - column: { name: image_url, value: "https://example.com/images/jazz-est.jpg" }
+              - column: { name: created_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:05:00+02:00'" }
+              - column: { name: updated_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:05:00+02:00'" }
+              - column: { name: version, valueNumeric: 0 }
+
+        - insert:
+            tableName: events
+            columns:
+              - column: { name: id, value: "10000000-0000-0000-0000-000000000003" }
+              - column: { name: name, value: "Mikroszerviz Workshop" }
+              - column: { name: description, value: "Gyakorlati workshop Spring Boot-alapú mikroszervizek fejlesztéséről." }
+              - column: { name: organizer_id, value: "20000000-0000-0000-0000-000000000001" }
+              - column: { name: venue_name, value: "Graphisoft Park" }
+              - column: { name: address, value: "1031 Budapest, Záhony utca 7." }
+              - column: { name: starts_at, valueComputed: "TIMESTAMPTZ '2026-11-21T09:00:00+01:00'" }
+              - column: { name: ends_at, valueComputed: "TIMESTAMPTZ '2026-11-21T17:00:00+01:00'" }
+              - column: { name: ticket_sales_start, valueComputed: "TIMESTAMPTZ '2026-09-20T08:00:00+02:00'" }
+              - column: { name: ticket_sales_end, valueComputed: "TIMESTAMPTZ '2026-11-20T18:00:00+01:00'" }
+              - column: { name: capacity, valueNumeric: 80 }
+              - column: { name: status, value: "PUBLISHED" }
+              - column: { name: image_url, value: "https://example.com/images/microservice-workshop.jpg" }
+              - column: { name: created_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:10:00+02:00'" }
+              - column: { name: updated_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:10:00+02:00'" }
+              - column: { name: version, valueNumeric: 0 }
+
+        - insert:
+            tableName: events
+            columns:
+              - column: { name: id, value: "10000000-0000-0000-0000-000000000004" }
+              - column: { name: name, value: "Karácsonyi Kézműves Vásár" }
+              - column: { name: description, value: "Ünnepi vásár helyi kézművesekkel és családi programokkal." }
+              - column: { name: organizer_id, value: "20000000-0000-0000-0000-000000000003" }
+              - column: { name: venue_name, value: "Vörösmarty tér" }
+              - column: { name: address, value: "1051 Budapest, Vörösmarty tér" }
+              - column: { name: starts_at, valueComputed: "TIMESTAMPTZ '2026-12-05T10:00:00+01:00'" }
+              - column: { name: ends_at, valueComputed: "TIMESTAMPTZ '2026-12-05T20:00:00+01:00'" }
+              - column: { name: ticket_sales_start, valueComputed: "TIMESTAMPTZ '2026-10-01T09:00:00+02:00'" }
+              - column: { name: ticket_sales_end, valueComputed: "TIMESTAMPTZ '2026-12-04T23:59:00+01:00'" }
+              - column: { name: capacity, valueNumeric: 1000 }
+              - column: { name: status, value: "DRAFT" }
+              - column: { name: image_url, value: "https://example.com/images/christmas-market.jpg" }
+              - column: { name: created_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:15:00+02:00'" }
+              - column: { name: updated_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:15:00+02:00'" }
+              - column: { name: version, valueNumeric: 0 }
+
+        - insert:
+            tableName: events
+            columns:
+              - column: { name: id, value: "10000000-0000-0000-0000-000000000005" }
+              - column: { name: name, value: "Szilveszteri Futóverseny" }
+              - column: { name: description, value: "Évzáró közösségi futóverseny 5 és 10 kilométeres távon." }
+              - column: { name: organizer_id, value: "20000000-0000-0000-0000-000000000004" }
+              - column: { name: venue_name, value: "Margitszigeti Atlétikai Centrum" }
+              - column: { name: address, value: "1007 Budapest, Margitsziget" }
+              - column: { name: starts_at, valueComputed: "TIMESTAMPTZ '2026-12-31T10:00:00+01:00'" }
+              - column: { name: ends_at, valueComputed: "TIMESTAMPTZ '2026-12-31T14:00:00+01:00'" }
+              - column: { name: ticket_sales_start, valueComputed: "TIMESTAMPTZ '2026-10-15T08:00:00+02:00'" }
+              - column: { name: ticket_sales_end, valueComputed: "TIMESTAMPTZ '2026-12-29T23:59:00+01:00'" }
+              - column: { name: capacity, valueNumeric: 500 }
+              - column: { name: status, value: "DRAFT" }
+              - column: { name: image_url, value: "https://example.com/images/new-years-run.jpg" }
+              - column: { name: created_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:20:00+02:00'" }
+              - column: { name: updated_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:20:00+02:00'" }
+              - column: { name: version, valueNumeric: 0 }
+
+      rollback:
+        - delete:
+            tableName: events
+            where: "id IN ('10000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000002', '10000000-0000-0000-0000-000000000003', '10000000-0000-0000-0000-000000000004', '10000000-0000-0000-0000-000000000005')"
