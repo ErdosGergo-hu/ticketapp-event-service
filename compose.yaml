@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: event-db
+    environment:
+      POSTGRES_DB: event_db
+      POSTGRES_USER: event_user
+      POSTGRES_PASSWORD: event_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: .
+    container_name: event-backend
+    depends_on:
+      - postgres
+#    environment:
+#      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:
