@@ -16,8 +16,6 @@ services:
     container_name: event-backend
     depends_on:
       - postgres
-#    environment:
-#      SPRING_PROFILES_ACTIVE: docker
     ports:
       - "8080:8080"
 
