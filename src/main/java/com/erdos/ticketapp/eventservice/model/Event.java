@@ -4,6 +4,7 @@ import com.erdos.ticketapp.eventservice.enums.EventStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -43,6 +44,12 @@ public class Event {
 
     private OffsetDateTime ticketSalesStart;
     private OffsetDateTime ticketSalesEnd;
+
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal basePrice;
+
+    @Column(nullable = false, length = 3)
+    private String currency;
 
     @Column(nullable = false)
     private Integer capacity;

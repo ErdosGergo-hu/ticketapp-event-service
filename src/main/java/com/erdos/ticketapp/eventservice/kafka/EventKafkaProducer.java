@@ -20,20 +20,25 @@ public class EventKafkaProducer {
     private String notificationTopic;
 
     public void sendTestNotification(UUID eventId, String message) {
-        NotificationEvent notificationEvent = new NotificationEvent(
-                eventId,
-                "EVENT_TEST",
-                message,
-                Instant.now());
+        send(eventId, "EVENT_TEST", message);
+    }
+
+    public void sendEventCancelled(UUID eventId, String eventName) {
+        send(eventId, "EVENT_CANCELLED", "Event cancelled: " + eventName);
+    }
+
+    private void send(UUID eventId, String type, String message) {
+        NotificationEvent notificationEvent = new NotificationEvent(eventId, type, message, Instant.now());
 
         kafkaTemplate.send(notificationTopic, eventId.toString(), notificationEvent)
                 .whenComplete((result, exception) -> {
                     if (exception != null) {
-                        log.error("Kafka test notification could not be sent for event {}", eventId, exception);
+                        log.error("Kafka notification {} could not be sent for event {}", type, eventId, exception);
                         return;
                     }
 
-                    log.info("Kafka test notification sent for event {} to partition {} at offset {}",
+                    log.info("Kafka notification {} sent for event {} to partition {} at offset {}",
+                            type,
                             eventId,
                             result.getRecordMetadata().partition(),
                             result.getRecordMetadata().offset());

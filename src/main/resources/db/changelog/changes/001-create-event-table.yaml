@@ -65,6 +65,18 @@ databaseChangeLog:
                   type: TIMESTAMP WITH TIME ZONE
 
               - column:
+                  name: base_price
+                  type: NUMERIC(12,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: currency
+                  type: CHAR(3)
+                  constraints:
+                    nullable: false
+
+              - column:
                   name: capacity
                   type: INTEGER
                   constraints:

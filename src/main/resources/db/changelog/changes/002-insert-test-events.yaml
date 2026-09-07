@@ -15,8 +15,10 @@ databaseChangeLog:
               - column: { name: address, value: "1093 Budapest, Fővám tér 11-12." }
               - column: { name: starts_at, valueComputed: "TIMESTAMPTZ '2026-10-15T18:00:00+02:00'" }
               - column: { name: ends_at, valueComputed: "TIMESTAMPTZ '2026-10-15T21:00:00+02:00'" }
-              - column: { name: ticket_sales_start, valueComputed: "TIMESTAMPTZ '2026-09-10T09:00:00+02:00'" }
+              - column: { name: ticket_sales_start, valueComputed: "TIMESTAMPTZ '2026-08-10T09:00:00+02:00'" }
               - column: { name: ticket_sales_end, valueComputed: "TIMESTAMPTZ '2026-10-15T17:00:00+02:00'" }
+              - column: { name: base_price, valueNumeric: 7990.00 }
+              - column: { name: currency, value: "HUF" }
               - column: { name: capacity, valueNumeric: 250 }
               - column: { name: status, value: "PUBLISHED" }
               - column: { name: image_url, value: "https://example.com/images/java-meetup.jpg" }
@@ -35,8 +37,10 @@ databaseChangeLog:
               - column: { name: address, value: "1093 Budapest, Mátyás utca 8." }
               - column: { name: starts_at, valueComputed: "TIMESTAMPTZ '2026-11-07T19:30:00+01:00'" }
               - column: { name: ends_at, valueComputed: "TIMESTAMPTZ '2026-11-07T22:30:00+01:00'" }
-              - column: { name: ticket_sales_start, valueComputed: "TIMESTAMPTZ '2026-09-15T10:00:00+02:00'" }
+              - column: { name: ticket_sales_start, valueComputed: "TIMESTAMPTZ '2026-08-15T10:00:00+02:00'" }
               - column: { name: ticket_sales_end, valueComputed: "TIMESTAMPTZ '2026-11-07T18:30:00+01:00'" }
+              - column: { name: base_price, valueNumeric: 9990.00 }
+              - column: { name: currency, value: "HUF" }
               - column: { name: capacity, valueNumeric: 350 }
               - column: { name: status, value: "PUBLISHED" }
               - column: { name: image_url, value: "https://example.com/images/jazz-est.jpg" }
@@ -55,8 +59,10 @@ databaseChangeLog:
               - column: { name: address, value: "1031 Budapest, Záhony utca 7." }
               - column: { name: starts_at, valueComputed: "TIMESTAMPTZ '2026-11-21T09:00:00+01:00'" }
               - column: { name: ends_at, valueComputed: "TIMESTAMPTZ '2026-11-21T17:00:00+01:00'" }
-              - column: { name: ticket_sales_start, valueComputed: "TIMESTAMPTZ '2026-09-20T08:00:00+02:00'" }
+              - column: { name: ticket_sales_start, valueComputed: "TIMESTAMPTZ '2026-08-20T08:00:00+02:00'" }
               - column: { name: ticket_sales_end, valueComputed: "TIMESTAMPTZ '2026-11-20T18:00:00+01:00'" }
+              - column: { name: base_price, valueNumeric: 11.99 }
+              - column: { name: currency, value: "EUR" }
               - column: { name: capacity, valueNumeric: 80 }
               - column: { name: status, value: "PUBLISHED" }
               - column: { name: image_url, value: "https://example.com/images/microservice-workshop.jpg" }
@@ -75,8 +81,10 @@ databaseChangeLog:
               - column: { name: address, value: "1051 Budapest, Vörösmarty tér" }
               - column: { name: starts_at, valueComputed: "TIMESTAMPTZ '2026-12-05T10:00:00+01:00'" }
               - column: { name: ends_at, valueComputed: "TIMESTAMPTZ '2026-12-05T20:00:00+01:00'" }
-              - column: { name: ticket_sales_start, valueComputed: "TIMESTAMPTZ '2026-10-01T09:00:00+02:00'" }
+              - column: { name: ticket_sales_start, valueComputed: "TIMESTAMPTZ '2026-08-01T09:00:00+02:00'" }
               - column: { name: ticket_sales_end, valueComputed: "TIMESTAMPTZ '2026-12-04T23:59:00+01:00'" }
+              - column: { name: base_price, valueNumeric: 14.99 }
+              - column: { name: currency, value: "EUR" }
               - column: { name: capacity, valueNumeric: 1000 }
               - column: { name: status, value: "DRAFT" }
               - column: { name: image_url, value: "https://example.com/images/christmas-market.jpg" }
@@ -95,8 +103,10 @@ databaseChangeLog:
               - column: { name: address, value: "1007 Budapest, Margitsziget" }
               - column: { name: starts_at, valueComputed: "TIMESTAMPTZ '2026-12-31T10:00:00+01:00'" }
               - column: { name: ends_at, valueComputed: "TIMESTAMPTZ '2026-12-31T14:00:00+01:00'" }
-              - column: { name: ticket_sales_start, valueComputed: "TIMESTAMPTZ '2026-10-15T08:00:00+02:00'" }
+              - column: { name: ticket_sales_start, valueComputed: "TIMESTAMPTZ '2026-07-15T08:00:00+02:00'" }
               - column: { name: ticket_sales_end, valueComputed: "TIMESTAMPTZ '2026-12-29T23:59:00+01:00'" }
+              - column: { name: base_price, valueNumeric: 8.99 }
+              - column: { name: currency, value: "USD" }
               - column: { name: capacity, valueNumeric: 500 }
               - column: { name: status, value: "DRAFT" }
               - column: { name: image_url, value: "https://example.com/images/new-years-run.jpg" }
