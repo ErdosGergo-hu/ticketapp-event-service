@@ -6,7 +6,8 @@ import com.erdos.ticketapp.eventservice.dto.response.EventResponse;
 import com.erdos.ticketapp.eventservice.dto.response.EventTicketingInfoResponse;
 import com.erdos.ticketapp.eventservice.enums.EventStatus;
 import com.erdos.ticketapp.eventservice.exception.EventNotFoundException;
-import com.erdos.ticketapp.eventservice.exception.InvalidEventStateException;
+import com.erdos.ticketapp.eventservice.exception.EventInvalidStateException;
+import com.erdos.ticketapp.eventservice.exception.TicketSaleClosedException;
 import com.erdos.ticketapp.eventservice.kafka.EventKafkaProducer;
 import com.erdos.ticketapp.eventservice.mapper.EventMapper;
 import com.erdos.ticketapp.eventservice.model.Event;
@@ -37,21 +38,20 @@ public class EventService {
 
     private final EventKafkaProducer eventKafkaProducer;
 
-    public String getTicketHello() {
-        return ticketClient.getTicket();
-    }
-
     @Transactional
     public EventResponse create(EventCreateRequest eventCreateRequest) {
         Event event = eventMapper.toEventFromCreate(eventCreateRequest);
         event.setCreatedAt(OffsetDateTime.now());
         event.setUpdatedAt(OffsetDateTime.now());
         event.setStatus(EventStatus.DRAFT);
-        Event saved = repository.save(event);
+        Event createdEvent = repository.save(event);
 
-        return eventMapper.toResponse(saved);
+        eventKafkaProducer.sendEventCreated(createdEvent.getId(), createdEvent.getName());
+
+        return eventMapper.toResponse(createdEvent);
     }
 
+    @Transactional(readOnly = true)
     public Page<EventResponse> search(EventSearchCriteria eventSearchCriteria, Pageable pageable) {
         return repository.findAll(eventSpecification.build(eventSearchCriteria), pageable)
                 .map(eventMapper::toResponse);
@@ -74,7 +74,7 @@ public class EventService {
         }
 
         if (event.getStatus() != EventStatus.PUBLISHED) {
-            throw new InvalidEventStateException(
+            throw new EventInvalidStateException(
                     "Only a published event can be cancelled. Current status: " + event.getStatus());
         }
 
@@ -93,18 +93,20 @@ public class EventService {
                 .orElseThrow(() -> new EventNotFoundException(id));
 
         if(!EventStatus.DRAFT.equals(event.getStatus())) {
-            throw new RuntimeException("Only a DRAFT Event can be Published!");
+            throw new EventInvalidStateException("Only a draft event can be published. Current status: " + event.getStatus());
         }
 
         if(!validToPublish(event)) {
-            throw new RuntimeException("The Event is not valid to be published");
+            throw new EventInvalidStateException("The Event is not valid to be published");
         }
 
         event.setStatus(EventStatus.PUBLISHED);
         event.setUpdatedAt(OffsetDateTime.now());
-        Event saved = repository.save(event);
+        Event publishedEvent = repository.save(event);
 
-        return eventMapper.toResponse(saved);
+        eventKafkaProducer.sendEventPublished(publishedEvent.getId(), publishedEvent.getName());
+
+        return eventMapper.toResponse(publishedEvent);
     }
 
     private boolean validToPublish(Event event) {
@@ -123,28 +125,18 @@ public class EventService {
         return !event.getStartsAt().isAfter(event.getEndsAt());
     }
 
-
-    /*
-        Does the event exist?
-        Is it PUBLISHED?
-        Is ticket selling currently open?
-        What is the capacity?
-        What price and currency should be used?
-     */
     @Transactional(readOnly = true)
     public EventTicketingInfoResponse getTicketingInfo(UUID id) {
         Event event = repository.findById(id)
                 .orElseThrow(() -> new EventNotFoundException(id));
 
         if(!EventStatus.PUBLISHED.equals(event.getStatus())) {
-            throw new RuntimeException("The Event is not published so the ticketing is off");
+            throw new EventInvalidStateException("Only a published event have a ticketing info. Current stats: " + event.getStatus());
         }
 
         if(event.getTicketSalesStart().isAfter(OffsetDateTime.now()) || event.getTicketSalesEnd().isBefore(OffsetDateTime.now())) {
-            throw new RuntimeException("The ticket sale is closed!");
+            throw new TicketSaleClosedException("The ticket sale is closed!");
         }
-
-        // Get capacity
 
         return eventMapper.toTicketingInfo(event);
     }

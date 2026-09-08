@@ -69,11 +69,6 @@ public class EventController {
                 .body(eventResponse);
     }
 
-//    @GetMapping
-//    public String hello() {
-//        return eventService.getTicketHello();
-//    }
-
     @PostMapping("/{eventId}/notification-test")
     public void sendTestNotification(
             @PathVariable UUID eventId,

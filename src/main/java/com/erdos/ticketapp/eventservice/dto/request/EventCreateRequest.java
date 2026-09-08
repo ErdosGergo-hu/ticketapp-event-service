@@ -1,8 +1,8 @@
 package com.erdos.ticketapp.eventservice.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -14,9 +14,11 @@ public record EventCreateRequest(
         @NotBlank String address,
         @NotNull OffsetDateTime startsAt,
         @NotNull OffsetDateTime endsAt,
-        OffsetDateTime ticketSalesStart,
-        OffsetDateTime ticketSalesEnd,
-        @NotNull Integer capacity,
+        @NotNull OffsetDateTime ticketSalesStart,
+        @NotNull OffsetDateTime ticketSalesEnd,
+        @NotNull @Positive Integer capacity,
+        @NotNull @PositiveOrZero BigDecimal basePrice,
+        @NotBlank @Size(min = 3, max = 3) String currency,
         String imageUrl
 ) {
 }

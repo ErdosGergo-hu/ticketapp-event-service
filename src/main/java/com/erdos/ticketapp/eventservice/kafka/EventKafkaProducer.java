@@ -23,8 +23,16 @@ public class EventKafkaProducer {
         send(eventId, "EVENT_TEST", message);
     }
 
+    public void sendEventCreated(UUID eventId, String eventName) {
+        send(eventId, "EVENT_CREATED", "Event created: " + eventName);
+    }
+
     public void sendEventCancelled(UUID eventId, String eventName) {
         send(eventId, "EVENT_CANCELLED", "Event cancelled: " + eventName);
+    }
+
+    public void sendEventPublished(UUID eventId, String eventName) {
+        send(eventId, "EVENT_PUBLISHED", "Event published: " + eventName);
     }
 
     private void send(UUID eventId, String type, String message) {
