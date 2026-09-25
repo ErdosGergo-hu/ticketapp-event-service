@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -95,6 +96,7 @@ class EventIntegrationTest {
         event.setUpdatedAt(
                 OffsetDateTime.parse("2026-09-01T10:15:00+02:00")
         );
+        event.setIdempotencyKey(UUID.randomUUID().toString());
 
         return eventRepository.saveAndFlush(event);
     }
@@ -120,10 +122,19 @@ class EventIntegrationTest {
                 """;
 
         mockMvc.perform(post("/events")
+                        .header("Idempotency-Key", "test-event-create-valid")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
+                .andExpect(jsonPath("$.name").value("Karácsonyi Kézműves Vásár"))
+                .andExpect(jsonPath("$.status").value("DRAFT"));
+
+        mockMvc.perform(post("/events")
+                        .header("Idempotency-Key", "test-event-create-valid")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Karácsonyi Kézműves Vásár"))
                 .andExpect(jsonPath("$.status").value("DRAFT"));
 
@@ -134,6 +145,9 @@ class EventIntegrationTest {
                 .isEqualTo("Karácsonyi Kézműves Vásár");
         assertThat(savedEvents.getFirst().getStatus())
                 .isEqualTo(EventStatus.DRAFT);
+        verify(eventKafkaProducer).sendEventCreated(
+                savedEvents.getFirst().getId(),
+                savedEvents.getFirst().getName());
     }
 
     @Test
@@ -156,6 +170,7 @@ class EventIntegrationTest {
                 """;
 
         mockMvc.perform(post("/events")
+                        .header("Idempotency-Key", "test-event-create-invalid")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isBadRequest());
@@ -198,17 +213,17 @@ class EventIntegrationTest {
     }
 
     @Test
-    void testPublishedEventCannotBePublishedAgain() throws Exception {
+    void testPublishedEventCanBePublishedAgainIdempotently() throws Exception {
         Event event = saveTestEvent(EventStatus.PUBLISHED);
 
         mockMvc.perform(post("/events/{id}/publish", event.getId()))
-                .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.title").value("Invalid event state"))
-                .andExpect(jsonPath("$.detail")
-                        .value("Only a draft event can be published. Current status: PUBLISHED"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(event.getId().toString()))
+                .andExpect(jsonPath("$.status").value("PUBLISHED"));
 
         Event unchangedEvent = eventRepository.findById(event.getId()).orElseThrow();
         assertThat(unchangedEvent.getStatus()).isEqualTo(EventStatus.PUBLISHED);
+        verifyNoInteractions(eventKafkaProducer);
     }
 
     @Test
@@ -228,7 +243,7 @@ class EventIntegrationTest {
 
     @Test
     void testDraftEventCannotBeCancelled() throws Exception {
-        Event event = saveTestEvent(EventStatus.DRAFT);
+        Event event = saveTestEvent();
 
         mockMvc.perform(post("/events/{id}/cancel", event.getId()))
                 .andExpect(status().isConflict())

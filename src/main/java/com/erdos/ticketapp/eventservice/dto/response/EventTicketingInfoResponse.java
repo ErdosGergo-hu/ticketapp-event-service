@@ -11,6 +11,7 @@ public record EventTicketingInfoResponse(
         EventStatus status,
         OffsetDateTime ticketSalesStart,
         OffsetDateTime ticketSalesEnd,
+        Integer capacity,
         BigDecimal basePrice,
         String currency
 ) {
