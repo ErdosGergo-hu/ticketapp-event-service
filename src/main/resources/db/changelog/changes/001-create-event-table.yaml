@@ -105,6 +105,14 @@ databaseChangeLog:
                     nullable: false
 
               - column:
+                  name: idempotency_key
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk_events_idempotency_key
+
+              - column:
                   name: version
                   type: BIGINT
                   defaultValueNumeric: 0

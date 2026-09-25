@@ -66,6 +66,9 @@ public class Event {
     @Column(nullable = false)
     private OffsetDateTime updatedAt;
 
+    @Column(nullable = false, unique = true, length = 100)
+    private String idempotencyKey;
+
     @Version
     private Long version;
 }

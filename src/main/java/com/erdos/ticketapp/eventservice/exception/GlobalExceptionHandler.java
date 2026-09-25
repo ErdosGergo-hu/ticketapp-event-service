@@ -3,11 +3,13 @@ package com.erdos.ticketapp.eventservice.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -42,6 +44,28 @@ public class GlobalExceptionHandler {
             TicketSaleClosedException exception,
             HttpServletRequest request) {
         return response(HttpStatus.CONFLICT, "Ticket sale unavailable", exception.getMessage(), request);
+    }
+
+    @ExceptionHandler(InvalidIdempotencyKeyException.class)
+    public ResponseEntity<ProblemDetail> handleInvalidIdempotencyKey(
+            InvalidIdempotencyKeyException exception,
+            HttpServletRequest request) {
+        return response(
+                HttpStatus.BAD_REQUEST,
+                "Invalid idempotency key",
+                exception.getMessage(),
+                request);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ProblemDetail> handleDataIntegrityViolation(
+            DataIntegrityViolationException exception,
+            HttpServletRequest request) {
+        return response(
+                HttpStatus.CONFLICT,
+                "Data conflict",
+                "The request conflicts with an existing event",
+                request);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -97,6 +121,17 @@ public class GlobalExceptionHandler {
             HttpServletRequest request) {
         String detail = "Invalid value for parameter '" + exception.getName() + "'";
         return response(HttpStatus.BAD_REQUEST, "Invalid parameter", detail, request);
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<ProblemDetail> handleMissingHeader(
+            MissingRequestHeaderException exception,
+            HttpServletRequest request) {
+        return response(
+                HttpStatus.BAD_REQUEST,
+                "Missing header",
+                "Required header '" + exception.getHeaderName() + "' is missing",
+                request);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)

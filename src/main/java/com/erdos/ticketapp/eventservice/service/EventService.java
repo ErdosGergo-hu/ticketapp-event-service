@@ -7,6 +7,7 @@ import com.erdos.ticketapp.eventservice.dto.response.EventTicketingInfoResponse;
 import com.erdos.ticketapp.eventservice.enums.EventStatus;
 import com.erdos.ticketapp.eventservice.exception.EventNotFoundException;
 import com.erdos.ticketapp.eventservice.exception.EventInvalidStateException;
+import com.erdos.ticketapp.eventservice.exception.InvalidIdempotencyKeyException;
 import com.erdos.ticketapp.eventservice.exception.TicketSaleClosedException;
 import com.erdos.ticketapp.eventservice.kafka.EventKafkaProducer;
 import com.erdos.ticketapp.eventservice.mapper.EventMapper;
@@ -21,7 +22,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -39,11 +43,21 @@ public class EventService {
     private final EventKafkaProducer eventKafkaProducer;
 
     @Transactional
-    public EventResponse create(EventCreateRequest eventCreateRequest) {
+    public EventResponse create(String idempotencyKey, EventCreateRequest eventCreateRequest) {
+        String validatedKey = validateIdempotencyKey(idempotencyKey);
+
+        Optional<Event> existing = repository.findByIdempotencyKey(validatedKey);
+
+        if (existing.isPresent()) {
+            validateSameCreateRequest(existing.get(), eventCreateRequest);
+            return eventMapper.toResponse(existing.get());
+        }
+
         Event event = eventMapper.toEventFromCreate(eventCreateRequest);
         event.setCreatedAt(OffsetDateTime.now());
         event.setUpdatedAt(OffsetDateTime.now());
         event.setStatus(EventStatus.DRAFT);
+        event.setIdempotencyKey(validatedKey);
         Event createdEvent = repository.save(event);
 
         eventKafkaProducer.sendEventCreated(createdEvent.getId(), createdEvent.getName());
@@ -92,6 +106,10 @@ public class EventService {
         Event event = repository.findById(id)
                 .orElseThrow(() -> new EventNotFoundException(id));
 
+        if (EventStatus.PUBLISHED.equals(event.getStatus())) {
+            return eventMapper.toResponse(event);
+        }
+
         if(!EventStatus.DRAFT.equals(event.getStatus())) {
             throw new EventInvalidStateException("Only a draft event can be published. Current status: " + event.getStatus());
         }
@@ -123,6 +141,66 @@ public class EventService {
         }
 
         return !event.getStartsAt().isAfter(event.getEndsAt());
+    }
+
+    private String validateIdempotencyKey(String key) {
+        if (key == null || key.isBlank()) {
+            throw new InvalidIdempotencyKeyException(
+                    "Idempotency-Key header is required"
+            );
+        }
+
+        String trimmedKey = key.trim();
+
+        if (trimmedKey.length() > 100) {
+            throw new InvalidIdempotencyKeyException(
+                    "Idempotency-Key cannot be longer than 100 characters"
+            );
+        }
+
+        return trimmedKey;
+    }
+
+    private void validateSameCreateRequest(
+            Event existing,
+            EventCreateRequest request
+    ) {
+        boolean sameRequest =
+                Objects.equals(existing.getName(), request.name())
+                        && Objects.equals(existing.getDescription(), request.description())
+                        && Objects.equals(existing.getOrganizerId(), request.organizerId())
+                        && Objects.equals(existing.getVenueName(), request.venueName())
+                        && Objects.equals(existing.getAddress(), request.address())
+                        && sameInstant(existing.getStartsAt(), request.startsAt())
+                        && sameInstant(existing.getEndsAt(), request.endsAt())
+                        && sameInstant(existing.getTicketSalesStart(), request.ticketSalesStart())
+                        && sameInstant(existing.getTicketSalesEnd(), request.ticketSalesEnd())
+                        && Objects.equals(existing.getCapacity(), request.capacity())
+                        && sameAmount(existing.getBasePrice(), request.basePrice())
+                        && Objects.equals(existing.getCurrency(), request.currency())
+                        && Objects.equals(existing.getImageUrl(), request.imageUrl());
+
+        if (!sameRequest) {
+            throw new InvalidIdempotencyKeyException(
+                    "Idempotency-Key was already used with a different request"
+            );
+        }
+    }
+
+    private boolean sameInstant(OffsetDateTime first, OffsetDateTime second) {
+        if (first == null || second == null) {
+            return first == second;
+        }
+
+        return first.toInstant().equals(second.toInstant());
+    }
+
+    private boolean sameAmount(BigDecimal first, BigDecimal second) {
+        if (first == null || second == null) {
+            return first == second;
+        }
+
+        return first.compareTo(second) == 0;
     }
 
     @Transactional(readOnly = true)

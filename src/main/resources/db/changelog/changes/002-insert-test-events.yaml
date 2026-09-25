@@ -24,6 +24,7 @@ databaseChangeLog:
               - column: { name: image_url, value: "https://example.com/images/java-meetup.jpg" }
               - column: { name: created_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:00:00+02:00'" }
               - column: { name: updated_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:00:00+02:00'" }
+              - column: { name: idempotency_key, value: "seed-event-create-0001" }
               - column: { name: version, valueNumeric: 0 }
 
         - insert:
@@ -46,6 +47,7 @@ databaseChangeLog:
               - column: { name: image_url, value: "https://example.com/images/jazz-est.jpg" }
               - column: { name: created_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:05:00+02:00'" }
               - column: { name: updated_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:05:00+02:00'" }
+              - column: { name: idempotency_key, value: "seed-event-create-0002" }
               - column: { name: version, valueNumeric: 0 }
 
         - insert:
@@ -68,6 +70,7 @@ databaseChangeLog:
               - column: { name: image_url, value: "https://example.com/images/microservice-workshop.jpg" }
               - column: { name: created_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:10:00+02:00'" }
               - column: { name: updated_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:10:00+02:00'" }
+              - column: { name: idempotency_key, value: "seed-event-create-0003" }
               - column: { name: version, valueNumeric: 0 }
 
         - insert:
@@ -90,6 +93,7 @@ databaseChangeLog:
               - column: { name: image_url, value: "https://example.com/images/christmas-market.jpg" }
               - column: { name: created_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:15:00+02:00'" }
               - column: { name: updated_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:15:00+02:00'" }
+              - column: { name: idempotency_key, value: "seed-event-create-0004" }
               - column: { name: version, valueNumeric: 0 }
 
         - insert:
@@ -112,6 +116,7 @@ databaseChangeLog:
               - column: { name: image_url, value: "https://example.com/images/new-years-run.jpg" }
               - column: { name: created_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:20:00+02:00'" }
               - column: { name: updated_at, valueComputed: "TIMESTAMPTZ '2026-09-01T10:20:00+02:00'" }
+              - column: { name: idempotency_key, value: "seed-event-create-0005" }
               - column: { name: version, valueNumeric: 0 }
 
       rollback:

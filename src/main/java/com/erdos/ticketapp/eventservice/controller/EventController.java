@@ -25,6 +25,23 @@ public class EventController {
     private final EventService eventService;
     private final EventKafkaProducer eventKafkaProducer;
 
+    @PostMapping
+    public ResponseEntity<EventResponse> create(
+            @RequestHeader("Idempotency-Key") String idempotencyKey,
+            @RequestBody @Valid EventCreateRequest eventCreateRequest) {
+        EventResponse eventResponse = eventService.create(idempotencyKey, eventCreateRequest);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(eventResponse.id())
+                .toUri();
+
+        return ResponseEntity
+                .created(location)
+                .body(eventResponse);
+    }
+
     @GetMapping("/search")
     public Page<EventResponse> getPageableAuctions(
             EventSearchCriteria eventSearchCriteria,
@@ -53,21 +70,6 @@ public class EventController {
     }
 
     // PUT /events/{id}Only DRAFT events can be edited
-
-    @PostMapping
-    public ResponseEntity<EventResponse> create(@RequestBody @Valid EventCreateRequest eventCreateRequest) {
-        EventResponse eventResponse = eventService.create(eventCreateRequest);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(eventResponse.id())
-                .toUri();
-
-        return ResponseEntity
-                .created(location)
-                .body(eventResponse);
-    }
 
     @PostMapping("/{eventId}/notification-test")
     public void sendTestNotification(
